@@ -1,33 +1,25 @@
-// Vercel Serverless Function for PDF generation using Puppeteer
 const puppeteer = require('puppeteer-core');
 const chromium = require('@sparticuz/chromium');
 
-module.exports = async function handler(req, res) {
+export default async function handler(request, response) {
   // Handle CORS
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Set CORS headers
-  Object.entries(corsHeaders).forEach(([key, value]) => {
-    res.setHeader(key, value);
-  });
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (request.method === 'OPTIONS') {
+    return response.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { content, title, type } = req.body;
+    const { content, title, type } = request.body;
 
     if (!content || !title) {
-      return res.status(400).json({ error: 'Missing content or title' });
+      return response.status(400).json({ error: 'Missing content or title' });
     }
 
     console.log(`🔧 Generating PDF for: ${title}`);
@@ -189,7 +181,7 @@ module.exports = async function handler(req, res) {
 
     console.log(`✅ PDF generated successfully for: ${title}`);
 
-    return res.status(200).json({
+    return response.status(200).json({
       success: true,
       pdfData: base64PDF,
       fileName: `${type || 'document'}_${Date.now()}.pdf`
@@ -197,7 +189,7 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ PDF generation error:', error);
-    return res.status(500).json({
+    return response.status(500).json({
       error: 'PDF generation failed',
       message: error.message
     });
