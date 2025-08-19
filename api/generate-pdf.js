@@ -1,8 +1,8 @@
 // Vercel Serverless Function for PDF generation using Puppeteer
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle CORS
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
